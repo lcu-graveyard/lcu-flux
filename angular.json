@@ -1,43 +1,214 @@
 {
-  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
-  "version": 1,
-  "newProjectRoot": "projects",
-  "projects": {
-    "flux": {
-      "root": "projects/flux",
-      "sourceRoot": "projects/flux/src",
-      "projectType": "library",
-      "prefix": "lib",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-ng-packagr:build",
-          "options": {
-            "tsConfig": "projects/flux/tsconfig.lib.json",
-            "project": "projects/flux/ng-package.json"
-          }
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "main": "projects/flux/src/test.ts",
-            "tsConfig": "projects/flux/tsconfig.spec.json",
-            "karmaConfig": "projects/flux/karma.conf.js"
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "projects/flux/tsconfig.lib.json",
-              "projects/flux/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
-          }
-        }
-      }
-    }
-  },
-  "defaultProject": "flux"
+	"$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+	"version": 1,
+	"newProjectRoot": "projects",
+	"projects": {
+		"common": {
+			"root": "projects/common",
+			"sourceRoot": "projects/common/src",
+			"projectType": "library",
+			"prefix": "lib",
+			"architect": {
+				"build": {
+					"builder": "@angular-devkit/build-ng-packagr:build",
+					"options": {
+						"tsConfig": "projects/common/tsconfig.lib.json",
+						"project": "projects/common/ng-package.json"
+					}
+				},
+				"test": {
+					"builder": "@angular-devkit/build-angular:karma",
+					"options": {
+						"main": "projects/common/src/test.ts",
+						"tsConfig": "projects/common/tsconfig.spec.json",
+						"karmaConfig": "projects/common/karma.conf.js"
+					}
+				},
+				"lint": {
+					"builder": "@angular-devkit/build-angular:tslint",
+					"options": {
+						"tsConfig": [
+							"projects/common/tsconfig.lib.json",
+							"projects/common/tsconfig.spec.json"
+						],
+						"exclude": [
+							"**/node_modules/**"
+						]
+					}
+				}
+			}
+		},
+		"lcu-sln-flux": {
+			"root": "projects/lcu-sln-flux",
+			"sourceRoot": "projects/lcu-sln-flux/src",
+			"projectType": "library",
+			"prefix": "lib",
+			"architect": {
+				"build": {
+					"builder": "@angular-devkit/build-ng-packagr:build",
+					"options": {
+						"tsConfig": "projects/lcu-sln-flux/tsconfig.lib.json",
+						"project": "projects/lcu-sln-flux/ng-package.json"
+					}
+				},
+				"test": {
+					"builder": "@angular-devkit/build-angular:karma",
+					"options": {
+						"main": "projects/lcu-sln-flux/src/test.ts",
+						"tsConfig": "projects/lcu-sln-flux/tsconfig.spec.json",
+						"karmaConfig": "projects/lcu-sln-flux/karma.conf.js"
+					}
+				},
+				"lint": {
+					"builder": "@angular-devkit/build-angular:tslint",
+					"options": {
+						"tsConfig": [
+							"projects/lcu-sln-flux/tsconfig.lib.json",
+							"projects/lcu-sln-flux/tsconfig.spec.json"
+						],
+						"exclude": [
+							"**/node_modules/**"
+						]
+					}
+				}
+			}
+		},
+		"flux-demo-forge": {
+			"root": "projects/flux-demo-forge/",
+			"sourceRoot": "projects/flux-demo-forge/src",
+			"projectType": "application",
+			"prefix": "lib",
+			"schematics": {
+				"@schematics/angular:component": {
+					"styleext": "scss"
+				}
+			},
+			"architect": {
+				"build": {
+					"builder": "@angular-devkit/build-angular:browser",
+					"options": {
+						"outputPath": "dist/flux-demo-forge",
+						"index": "projects/flux-demo-forge/src/index.html",
+						"main": "projects/flux-demo-forge/src/main.ts",
+						"polyfills": "projects/flux-demo-forge/src/polyfills.ts",
+						"tsConfig": "projects/flux-demo-forge/tsconfig.app.json",
+						"assets": [
+							"projects/flux-demo-forge/src/favicon.ico",
+							"projects/flux-demo-forge/src/assets",
+							{
+								"glob": "package.json",
+								"input": "./",
+								"output": "/"
+							}
+						],
+						"styles": [
+							"projects/flux-demo-forge/src/styles.scss"
+						],
+						"scripts": []
+					},
+					"configurations": {
+						"production": {
+							"fileReplacements": [
+								{
+									"replace": "projects/flux-demo-forge/src/environments/environment.ts",
+									"with": "projects/flux-demo-forge/src/environments/environment.prod.ts"
+								}
+							],
+							"optimization": true,
+							"outputHashing": "all",
+							"sourceMap": false,
+							"extractCss": true,
+							"namedChunks": false,
+							"aot": true,
+							"extractLicenses": true,
+							"vendorChunk": false,
+							"buildOptimizer": true,
+							"budgets": [
+								{
+									"type": "initial",
+									"maximumWarning": "2mb",
+									"maximumError": "5mb"
+								}
+							]
+						}
+					}
+				},
+				"serve": {
+					"builder": "@angular-devkit/build-angular:dev-server",
+					"options": {
+						"browserTarget": "flux-demo-forge:build"
+					},
+					"configurations": {
+						"production": {
+							"browserTarget": "flux-demo-forge:build:production"
+						}
+					}
+				},
+				"extract-i18n": {
+					"builder": "@angular-devkit/build-angular:extract-i18n",
+					"options": {
+						"browserTarget": "flux-demo-forge:build"
+					}
+				},
+				"test": {
+					"builder": "@angular-devkit/build-angular:karma",
+					"options": {
+						"main": "projects/flux-demo-forge/src/test.ts",
+						"polyfills": "projects/flux-demo-forge/src/polyfills.ts",
+						"tsConfig": "projects/flux-demo-forge/tsconfig.spec.json",
+						"karmaConfig": "projects/flux-demo-forge/karma.conf.js",
+						"styles": [
+							"projects/flux-demo-forge/src/styles.scss"
+						],
+						"scripts": [],
+						"assets": [
+							"projects/flux-demo-forge/src/favicon.ico",
+							"projects/flux-demo-forge/src/assets"
+						]
+					}
+				},
+				"lint": {
+					"builder": "@angular-devkit/build-angular:tslint",
+					"options": {
+						"tsConfig": [
+							"projects/flux-demo-forge/tsconfig.app.json",
+							"projects/flux-demo-forge/tsconfig.spec.json"
+						],
+						"exclude": [
+							"**/node_modules/**"
+						]
+					}
+				}
+			}
+		},
+		"flux-demo-forge-e2e": {
+			"root": "projects/flux-demo-forge-e2e/",
+			"projectType": "application",
+			"prefix": "",
+			"architect": {
+				"e2e": {
+					"builder": "@angular-devkit/build-angular:protractor",
+					"options": {
+						"protractorConfig": "projects/flux-demo-forge-e2e/protractor.conf.js",
+						"devServerTarget": "flux-demo-forge:serve"
+					},
+					"configurations": {
+						"production": {
+							"devServerTarget": "flux-demo-forge:serve:production"
+						}
+					}
+				},
+				"lint": {
+					"builder": "@angular-devkit/build-angular:tslint",
+					"options": {
+						"tsConfig": "projects/flux-demo-forge-e2e/tsconfig.e2e.json",
+						"exclude": [
+							"**/node_modules/**"
+						]
+					}
+				}
+			}
+		}
+	},
+	"defaultProject": "common"
 }

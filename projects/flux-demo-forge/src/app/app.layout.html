@@ -1,0 +1,15 @@
+<mat-toolbar color="primary" class="sticky">
+  <a mat-button routerLink="/"><mat-icon>home</mat-icon></a>
+
+  <span class="filler"></span>
+
+  <a mat-icon-button routerLink="/solutions" routerLinkActive="active"> <mat-icon>cloud</mat-icon> </a>
+</mat-toolbar>
+
+<mat-sidenav-container class="mainscreen">
+  <!-- <mat-sidenav #sidenav mode="side" class="side-nav">
+    <forge-side-nav></forge-side-nav>
+  </mat-sidenav> -->
+
+  <mat-sidenav-content class="content"> <router-outlet></router-outlet> </mat-sidenav-content>
+</mat-sidenav-container>

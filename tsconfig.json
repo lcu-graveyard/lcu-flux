@@ -19,11 +19,17 @@
       "dom"
     ],
     "paths": {
-      "flux": [
-        "dist/flux"
+      "@lcu/flux": [
+        "dist/common"
       ],
-      "flux/*": [
-        "dist/flux/*"
+      "@lcu/flux/*": [
+        "dist/common/*"
+      ],
+      "@lowcodeunit/lcu-sln-flux": [
+        "dist/lcu-sln-flux"
+      ],
+      "@lowcodeunit/lcu-sln-flux/*": [
+        "dist/lcu-sln-flux/*"
       ]
     }
   }

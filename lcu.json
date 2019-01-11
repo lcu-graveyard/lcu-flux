@@ -1,5 +1,7 @@
 { 
     "templates": {
-        "repository": "lowcodeunit-devkit/lcu-cli-templates-core"
+        "repository": "lowcodeunit-devkit/lcu-cli-templates-core",
+        "scope": "@lowcodeunit",
+        "workspace": "lcu-flux"
     }
 }

@@ -1,0 +1,21 @@
+{
+    "DefaultDocPath": "overview.md",
+    "Docs": [
+        {
+            "Children": [],
+            "Path": "overview.md",
+            "Title": "Overview"
+        },
+        {
+          "Children": [
+            {
+              "Children": [],
+              "Path": "/getting-started/example.md",
+              "Title": "An Example"
+            }
+          ],
+          "Title": "Getting Started"
+        }
+    ],
+    "LocationRoot": "https://raw.githubusercontent.com/lowcodeunit/lcu-sln-lcu-sln-flux/master/docs/"
+}

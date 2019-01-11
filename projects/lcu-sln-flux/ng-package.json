@@ -1,0 +1,7 @@
+{
+  "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
+  "dest": "../../dist/lcu-sln-flux",
+  "lib": {
+    "entryFile": "src/lcu.api.ts"
+  }
+}

@@ -1,0 +1,19 @@
+<div class="push-out">
+  <h1>Welcome to the Fathym Forge - Solutions</h1>
+
+  <div class="push-out" *ngIf="!Loading">
+    <mat-nav-list>
+      <ng-container *ngFor="let option of SolutionOptions">
+        <ng-container *ngFor="let module of option.Modules">
+          <mat-list-item *ngIf="module?.Control">
+            <a matLine [routerLink]="['/solutions', module.Control.Base, module.Control.Type, 'overview']">{{ module.Name }}</a>
+
+            <p matLine class="mat-body-1">Future description</p>
+          </mat-list-item>
+        </ng-container>
+      </ng-container>
+    </mat-nav-list>
+  </div>
+
+  <mat-spinner *ngIf="Loading"></mat-spinner>
+</div>

@@ -1,0 +1,92 @@
+<div *ngIf="FlowsConfig">
+  <div *ngIf="(!OrgInfoSet) && !MainLoader && !OrgLoading">
+      <form ngSubmit="SaveFlowsConfig()">
+          <mat-form-field class="mat-form-field-flex">
+              <input matInput placeholder="Organization Name" name="orgName" [(ngModel)]="FlowsConfig.OrganizationName" required />
+          </mat-form-field>
+
+          <mat-form-field class="mat-form-field-flex">
+              <input matInput placeholder="Organization Lookup" maxlength="4" (input)="ValidateLookup(3,4)" name="orgLookup" [(ngModel)]="FlowsConfig.OrganizationLookup" required />
+          </mat-form-field>
+
+          <span *ngIf="OrgLookupError" style="color:red;">{{OrgLookupError}}</span>
+
+          <div style="padding-top:20px;">
+              <button mat-raised-button color="primary" class="mat-button-lg" (click)="Save()" *ngIf="!Loading">Save</button>
+          </div>
+      </form>
+  </div>
+
+  <div *ngIf="OrgInfoSet" class="hero">
+      <div class="main-flow-inner" *ngIf="!MainLoader">
+          <mat-card class="flows">
+              <mat-card-content>
+                  <h2>Flow Management</h2>
+
+                  <mat-list>
+                      <h3 mat-subheader>
+                          <mat-icon mat-list-icon>settings_input_antenna</mat-icon>
+
+                          Active Flows
+                      </h3>
+
+                      <mat-list-item *ngFor="let flow of FlowConfigs.Active.Data">
+                          <div fxFlex="70%">
+                              <div matLine>
+                                  <h4>{{flow.Name}} - <small>{{flow.Description}}</small></h4>
+                              </div>
+                          </div>
+                          <div fxFlex="30%">
+                              <a mat-raised-button color="accent" [href]="[FluxManagePath, flow.ID].join('/')">
+                                  Manage Flow
+                              </a>
+                          </div>
+                      </mat-list-item>
+
+                      <mat-list-item *ngIf="!Loading && FlowConfigs.Active.TotalRecords == 0">
+                          <h4 mat-line>No active flows.  Provision a flow from the workshop.</h4>
+                      </mat-list-item>
+
+                      <br /><br />
+                      <hr *ngIf="FlowConfigs.Inactive.TotalRecords > 0" />
+
+                      <h3 mat-subheader *ngIf="FlowConfigs.Inactive.TotalRecords > 0">
+                          <mat-icon mat-list-icon>assessment</mat-icon>
+
+                          Flow Workshop
+                      </h3>
+
+                      <mat-list-item [fxShow]="!flow.Deleted" *ngFor="let flow of FlowConfigs.Inactive.Data">
+                          <div fxFlex="65%">
+                              <div matLine>
+                                  <h4>{{flow.Name}} - <small>{{flow.Description}}</small></h4>
+                              </div>
+                          </div>
+                          <div fxFlex="35%">
+                              <a mat-raised-button color="accent" [href]="[FluxManagePath, flow.ID].join('/')">
+                                  Manage Flow
+                              </a>
+                              <a mat-raised-button color="accent" (click)="DeleteFlow(flow.ID)">
+                                  Delete
+                              </a>
+                          </div>
+                      </mat-list-item>
+
+                      <br /><br />
+
+                      <hr />
+
+                      <br />
+                      <mat-list-item>
+                          <a mat-raised-button color="accent" (click)="CreateNewFlow()">
+                              Create New Flow
+                          </a>
+                      </mat-list-item>
+                  </mat-list>
+              </mat-card-content>
+          </mat-card>
+      </div>
+  </div>
+</div>
+
+<mat-card *ngIf="(Loading && MainLoader) || OrgLoading" class="spinner-container"><mat-spinner class="spinner"></mat-spinner></mat-card>

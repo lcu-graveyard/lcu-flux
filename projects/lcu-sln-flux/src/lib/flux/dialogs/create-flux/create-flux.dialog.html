@@ -1,0 +1,42 @@
+﻿<h2 mat-dialog-title>{{Data.title}}</h2>
+<mat-dialog-content>
+    <div class="container" fxLayout="column" fxLayoutAlign="center center">
+        <div fxFlex="auto" class="content">
+            <div>
+                <mat-form-field style="width: 100%">
+                    <input type="text" matInput name="name" placeholder="Name"
+                           [(ngModel)]="Name" required />
+                </mat-form-field>
+            </div>
+
+            <div>
+                <mat-form-field style="width: 100%">
+                    <input type="text" matInput name="description" placeholder="Description"
+                           [(ngModel)]="Description" required />
+                </mat-form-field>
+            </div>
+
+            <div>
+                <mat-form-field style="width: 90%;float:left;">
+                    <input type="text" matInput name="lookup" placeholder="Lookup"
+                           [(ngModel)]="Lookup" required maxlength="4" />
+                </mat-form-field>
+                <i style="float:right;color:grey;width:10%;margin-top:10px;cursor:pointer;" matTooltip="Lookups are a 3 to 4 length alphanumeric representation of the current domain object.  Flows are built with the format of 'flw-{Organization Lookup}-{Flow Lookup}-{Module Lookup}'.  This format helps keep your flow agnostic to any specific service provider.  When naming lookups, use something that is recognizable and relevant based on the asset you are creating" class="fa fa-info-circle"></i>
+            </div>
+        </div>
+    </div>
+</mat-dialog-content>
+<div mat-dialog-actions>
+    <div *ngIf="!Saving">
+        <div>
+            <button *ngIf="CanSave()" id="modalConfirmButton" mat-raised-button color="accent" (click)="Save()">Create</button>
+            <button id="modalCancelButton" mat-button color="warn" mat-dialog-close="Cancel">Cancel</button>
+        </div>
+        <div *ngIf="Error" style="padding-top:20px;text-align:center;">
+            <span style="color:red;">{{Error}}</span>
+        </div>
+    </div>
+    <div *ngIf="Saving" title="Saving" style="margin:0 auto;">
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+    </div>
+</div>
