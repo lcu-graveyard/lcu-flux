@@ -1,0 +1,66 @@
+﻿<div class="cron-wrap">
+	<span>Every: </span>
+	<div class="cron-select-wrap">
+		<mat-select class="cron-select" [ngModel]="Frequency.Base" (ngModelChange)="HandleChange(Frequency, 'Base', $event)">
+			<mat-option [value]="freq.Value" *ngFor="let freq of FrequencyConfig">{{freq.Label}}</mat-option>
+		</mat-select>
+	</div>
+
+	<div class="select-options">
+		<!--<span ng-show="Frequency.Base == 4">on </span>
+
+		<div ng-show="Frequency.Base == 4" class="cron-select-wrap">
+			<mat-select class="cron-select" [ngModel]="Frequency.Base" (ngModelChange)="HandleChange(Frequency, 'Base', $event)"
+					   [multiple]="Multiple">
+				<mat-option [value]="value" *ngFor="let value of DayValues">{{CronDayName(value)}}</mat-option>
+			</mat-select>
+		</div>
+
+		<span ng-show="Frequency.Base >= 5">on the </span>
+
+		<div ng-show="Frequency.Base >= 5" class="cron-select-wrap">
+			<mat-select class="cron-select" [ngModel]="Frequency.DayOfMonthValues" (ngModelChange)="HandleChange(Frequency, 'DayOfMonthValues', $event)"
+					   [multiple]="Multiple">
+				<mat-option [value]="value" *ngFor="let value of DayValues">{{CronDayName(value)}}</mat-option>
+			</mat-select>
+			<select class="cron-select day-of-month-value"
+					ng-model="Frequency.dayOfMonthValues"
+					ng-if="allowMultiple" multiple
+					ng-options="value as CronNumeral(value) for value in dayOfMonthValues"></select>
+			<select class="cron-select day-of-month-value"
+					ng-model="Frequency.dayOfMonthValues"
+					ng-if="!allowMultiple"
+					ng-options="value as CronNumeral(value) for value in dayOfMonthValues"></select>
+		</div>
+		<span ng-show="Frequency.Base == 6">of </span>
+		<div ng-show="Frequency.Base == 6" class="cron-select-wrap">
+			<select class="cron-select month-value"
+					ng-model="Frequency.monthValues"
+					ng-if="allowMultiple" multiple
+					ng-options="value as CronMonthName(value) for value in monthValues"></select>
+			<select class="cron-select month-value"
+					ng-model="Frequency.monthValues"
+					ng-if="!allowMultiple"
+					ng-options="value as CronMonthName(value) for value in monthValues"></select>
+		</div>
+		<span ng-show="Frequency.Base >= 2">at </span>
+		<div ng-show="Frequency.Base >= 3" class="cron-select-wrap">
+			<select class="cron-select hour-value"
+					ng-model="Frequency.hourValues"
+					ng-if="allowMultiple" multiple
+					ng-options="value as value for value in hourValues"></select>
+			<select class="cron-select hour-value"
+					ng-model="Frequency.hourValues"
+					ng-if="!allowMultiple"
+					ng-options="value as value for value in hourValues"></select>
+		</div>
+		<span ng-show="Frequency.Base >= 3"> : </span>-->
+		<div [fxShow]="Frequency.Base >= 2" class="cron-select-wrap">
+			<mat-select class="cron-select" [multiple]="Multiple"
+					   [ngModel]="Frequency.MinuteValues" (ngModelChange)="HandleChange(Frequency, 'MinuteValues', $event)">
+				<mat-option [value]="value" *ngFor="let value of MinuteValues">{{value}}</mat-option>
+			</mat-select>
+		</div>
+		<span [fxShow]="Frequency.Base == 2"> past the hour</span>
+	</div>
+</div>

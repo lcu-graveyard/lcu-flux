@@ -1,0 +1,61 @@
+﻿<h2 mat-dialog-title>{{Data.title}}</h2>
+<mat-dialog-content class="stretch-dialog-height">
+    <button mat-mini-fab class="flow-module-add-function" (click)="AddNewFunction($event)" [fxShow]="AddFunctionVisible">
+        <mat-icon>add</mat-icon>
+    </button>
+    <mat-list dnd-sortable-container class="list-group no-pointer" [sortableData]="SchemaFunctions" style="height:65%;margin-top:40px;margin-bottom:20px;display:block;overflow-y:auto;">
+        <mat-list-item *ngFor="let func of SchemaFunctions; let i = index" dnd-sortable [sortableIndex]="i" (dragend)="SortSuccess()">
+            <div class="container" style="width:100%;cursor:default !important;" fxLayout fxLayout.xs="column" fxLayoutAlign="left" fxLayoutGap="10px" fxLayoutGap.xs="0">
+                <div fxFlex="100%" class="item item-1">
+                    <div *ngIf="func.ExtraData.Refactored" matTooltipPosition="after" matTooltip="Function has been refactored due to dependency changes" style="float:left;padding-right:20px;">
+                        <i style="color:red;" class="fa fa-exclamation" aria-hidden="true"></i>
+                    </div>
+                    <div *ngIf="func.ExtraData.HasErrors" matTooltip="Function has errors" class="node-action node-config-status" style="color:red;float:left;padding-right:20px;">
+                        <i class="fa fa-exclamation-circle"></i>
+                    </div>
+                    {{func.Name}}&nbsp;&nbsp;<span *ngIf="func.ReturnValueType">({{func.ReturnValueType}})</span><span *ngIf="!func.ReturnValueType">({{func.Function.ReturnType}})</span>
+                </div>
+                <div dnd-sortable-handle title="Sort order" fxFlex="100px" class="item item-2">
+                    <button type="button" mat-button color="warn">
+                        <mat-icon>reorder</mat-icon>
+                    </button>
+                </div>
+                <div fxFlex="100px" class="item item-3">
+                    <button type="button" mat-button color="warn" (click)="EditFunction(func.ID)">
+                        <mat-icon>settings</mat-icon>
+                    </button>
+                </div>
+                <div fxFlex="100px" class="item item4">
+                    <button type="button" mat-button color="warn" (click)="RemoveFunction(func.ID)">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </mat-list-item>
+    </mat-list>
+    <div *ngIf="GetFilteredAvailableSchemaProperties().length > 0" class="container" fxLayout fxLayout.xs="column" fxLayoutAlign="left" fxLayoutGap="10px" fxLayoutGap.xs="0">
+        <div fxFlex="100%" class="item item-1">
+            <div *ngIf="ReturnRefactored" matTooltipPosition="after" matTooltip="Return function has been refactored due to dependency changes" style="float:left;padding-right:20px;">
+                <i style="color:red;" class="fa fa-exclamation" aria-hidden="true"></i>
+            </div>
+            <div *ngIf="ReturnRefactored" title="Return Function must be present" class="node-action node-config-status" style="color:red;">
+                <i class="fa fa-exclamation-circle"></i>
+            </div>
+            <mat-form-field style="width:95%;">
+                <mat-select style="margin-top:0;" placeholder="Return Function" required [(ngModel)]="SelectedReturnFunction" (change)="ReturnFunctionChanged()" name="return-properties">
+                    <mat-option *ngFor="let functionProp of GetFilteredAvailableSchemaProperties()" [value]="functionProp">
+                        <span *ngIf="functionProp.FullPropertyName">{{functionProp.FullPropertyName}}</span><span *ngIf="!functionProp.FullPropertyName">{{functionProp.Property.title}}</span> <span *ngIf="functionProp.Source !='static'">&nbsp;&nbsp;({{functionProp.Property.type}})</span>
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+    </div>
+    <div *ngIf="GetFilteredAvailableSchemaProperties().length == 0" class="container" fxLayout fxLayout.xs="column" fxLayoutAlign="left" fxLayoutGap="10px" fxLayoutGap.xs="0">
+        <i>No functions of expected return type {{ExpectedReturnType}}</i>
+    </div>
+</mat-dialog-content>
+<div mat-dialog-actions>
+    <button id="modalConfirmButton" mat-raised-button color="accent" (click)="Done()">Done</button>
+    <span class="fill-remaining-space"></span>
+    <button mat-button color="warn" mat-dialog-close="Cancel">Cancel</button>
+</div>

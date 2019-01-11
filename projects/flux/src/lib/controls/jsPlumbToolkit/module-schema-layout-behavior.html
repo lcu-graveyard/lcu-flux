@@ -1,0 +1,13 @@
+﻿<section class="flow-layout-behavior">
+    <jsplumb-toolkit id="jsPlumbSurface" class="jtk-demo-canvas jtk-surface jtk-droppable" #toolkit surfaceId="flowchartSurface" jtkId="flowchart" [view]="FlowLayout.View" [renderParams]="FlowLayout.RenderParams" [toolkitParams]="FlowLayout.ToolkitParams" [nodeResolver]="NodeResolver"></jsplumb-toolkit>
+
+    <button mat-mini-fab class="flow-module-add-schema" (click)="ShowSchemaOptions($event)" [fxShow]="!SchemaOptionsVisible">
+        <mat-icon>add</mat-icon>
+    </button>
+    <div [fxShow]="SchemaOptionsVisible">
+        <mat-select #schemaOptions class="flow-module-schema-options" (openedChange)="HideSchemaOptions()" (selectionChange)="SchemaSelected($event)">
+            <mat-option [fxShow]="!SingleSchemaInput || IncommingSchemaCount == 0" value="incomming">New Incomming Schema</mat-option>
+            <mat-option [fxShow]="!SingleSchemaOutput || OutgoingSchemaCount == 0" value="outgoing">New Outgoing Schema</mat-option>
+        </mat-select>
+    </div>
+</section>

@@ -1,0 +1,11 @@
+﻿<section class="flow-layout-behavior">
+    <jsplumb-toolkit id="jsPlumbSurface" class="jtk-demo-canvas jtk-surface jtk-droppable" #toolkit surfaceId="flowchartSurface" jtkId="flowchart" [view]="FlowLayout.View" [renderParams]="FlowLayout.RenderParams" [toolkitParams]="FlowLayout.ToolkitParams" [nodeResolver]="NodeResolver"></jsplumb-toolkit>
+
+    <div class="controls">
+        <i class="fa fa-arrows selected-mode" mode="pan" title="Pan Mode"></i>
+        <i class="fa fa-pencil" mode="select" title="Select Mode"></i>
+        <i class="fa fa-home" reset="" title="Zoom To Fit"></i>
+    </div>
+
+    <jsplumb-miniview class="miniview" surfaceId="flowchartSurface"></jsplumb-miniview>
+</section>

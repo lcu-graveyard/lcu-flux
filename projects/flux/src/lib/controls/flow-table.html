@@ -1,0 +1,56 @@
+﻿<div class="table node">
+	<div class="name">
+		<div class="delete" delete-schema="" title="Click to delete">
+			<i class="fa fa-times"></i>
+		</div>
+		<div style="width: 100px;overflow: hidden;white-space: nowrap;float: left;padding-left: 8px;">{{obj.Name}}</div>
+
+		<div style="width:190px;">
+			<div *ngIf="IsNodeError()" style="color:red;" class="configure-error" title="{{NodeError()}}">
+				<i class="fa fa-exclamation-circle"></i>
+			</div>
+			<div class="configure-schema" configure-schema="" title="Click to configure schema">
+				<i class="fa fa-gear"></i>
+			</div>
+			<div [fxShow]="obj.SchemaType == 'outgoing'" class="configure-filters" configure-schema="" title="Click to configure output filters">
+				<i class="fa fa-filter"></i>
+			</div>
+			<div [fxShow]="obj.ShowJoinLink == true" class="configure-relationships" configure-relationships="" title="Click to configure relationships">
+				<i class="fa fa-chain"></i>
+			</div>
+			<div [fxShow]="obj.SchemaType == 'outgoing'" class="configure-groups" configure-groups="" title="Click to configure groups/timings">
+				<i class="fa fa-object-group"></i>
+			</div>
+		</div>
+	</div>
+
+	<ul class="table-columns">
+		<li *ngFor="let field of PivotProperties()" port-type="column" class="table-column jtk-droppable">
+			<div>
+				<span class="pull-left">
+					<span *ngFor="let i of GetPadding(field)">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+					{{field.title}}
+				</span>
+				<div *ngIf="ShowMappingError(field.id)" style="color:red;" class="pull-right" title="A mapping function is required">
+					<i class="fa fa-exclamation-circle"></i>
+				</div>
+				<div *ngIf="ShowMappingFunctionError(field.id)" style="color:red;" class="pull-right" title="Mapping function errors">
+					<i class="fa fa-exclamation-circle"></i>
+				</div>
+				<span class="pull-right">
+					({{field.type}})
+				</span>
+			</div>
+			<!--
+			configure the li as an edge source, with a type of column, a scope derived from
+			the columns datatype, and a filter that prevents dragging new edges from the delete button or from the label.
+			-->
+			<jtk-source [attr.port-id]="field.id" port-type="column" filter=".table-column-delete, .table-column-delete-icon, .table-column-edit, .table-column-edit-icon" filter-exclude="true"></jtk-source>
+			<!--
+			configure the li as an edge target, with a type of column, and a scope derived from the
+			column's datatype.
+			-->
+			<jtk-target [attr.port-id]="field.id" port-type="column"></jtk-target>
+		</li>
+	</ul>
+</div>

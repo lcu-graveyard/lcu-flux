@@ -1,0 +1,73 @@
+﻿<h2 mat-dialog-title>{{Data.title}}</h2>
+<mat-dialog-content class="stretch-dialog-height">
+    <mat-form-field style="width:85%;">
+        <mat-select placeholder="Timestamp field" [(ngModel)]="Timestamp" name="tsproperties">
+            <mat-option *ngFor="let prop of TimestampProperties" [value]="prop">
+                {{prop.title}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+    <div class="container" fxLayout fxLayout.xs="column" fxLayoutAlign="left" fxLayoutGap="10px" fxLayoutGap.xs="0" style="width:85%;float:left;">
+        <mat-form-field style="width:100%;">
+        <mat-select placeholder="Properties to Group By" [(ngModel)]="SelectedProperty" name="properties">
+            <mat-option *ngFor="let prop of AvailableProperties" [value]="prop">
+                {{prop.title}}
+            </mat-option>
+        </mat-select>
+        </mat-form-field>
+    </div>
+    <button style="float:left;" type="button" mat-button color="warn" (click)="AddGroup()">
+        <mat-icon>add</mat-icon>
+    </button>
+    <mat-list dnd-sortable-container class="list-group no-pointer" [sortableData]="Groups" style="clear:both;max-height:40%;margin-top:40px;margin-bottom:20px;overflow-y:auto;">
+        <mat-list-item *ngFor="let group of Groups; let i = index" dnd-sortable [sortableIndex]="i" (dragend)="SortSuccess()">
+            <div class="container" style="width:100%;cursor:default !important;" fxLayout fxLayout.xs="column" fxLayoutAlign="left" fxLayoutGap="10px" fxLayoutGap.xs="0">
+                <div fxFlex="100%" class="item item-1">
+                    {{group.title}}
+                </div>
+                <div dnd-sortable-handle title="Sort order" fxFlex="100px" class="item item-2">
+                    <button type="button" mat-button color="warn">
+                        <mat-icon>reorder</mat-icon>
+                    </button>
+                </div>
+                <div fxFlex="100px" class="item item4">
+                    <button type="button" mat-button color="warn" (click)="RemoveGroup(group.id)">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </mat-list-item>
+    </mat-list>
+
+    <hr />
+
+    <mat-checkbox [(ngModel)]="TumblingWindow" name="tumbling">
+        Tumbling Window
+    </mat-checkbox>
+
+    <div *ngIf="TumblingWindow" class="container" fxLayout fxLayout.xs="column" fxLayoutAlign="left" fxLayoutGap.xs="0">
+        <mat-form-field style="width:40%;padding-top:20px;">
+        <mat-select placeholder="Tumbling Interval" [(ngModel)]="TumblingInterval" name="interval">
+            <mat-option value="milliseconds">Milliseconds</mat-option>
+            <mat-option value="seconds">Seconds</mat-option>
+            <mat-option value="minutes">Minutes</mat-option>
+            <mat-option value="hours">Hours</mat-option>
+            <mat-option value="days">Days</mat-option>
+            <mat-option value="weeks">Weeks</mat-option>
+        </mat-select>
+        </mat-form-field>
+
+        <mat-form-field style="padding-left:130px;width:40px">
+            <label>Tumbling Interval Value</label>
+            <input matInput required type="number" step="1" name="intervalValue" [(ngModel)]="TumblingIntervalValue" min="0"
+                   max="1000" />
+        </mat-form-field>
+    </div>
+
+</mat-dialog-content>
+
+<div mat-dialog-actions>
+    <button id="modalConfirmButton" mat-raised-button color="accent" (click)="Done()">Done</button>
+    <span class="fill-remaining-space" style="text-align:center; color:red;">{{Error}}</span>
+    <button mat-button color="warn" mat-dialog-close="Cancel">Cancel</button>
+</div>

@@ -1,0 +1,12 @@
+﻿<div [fxShow]="prop.type != 'object'" *ngFor="let prop of SimulationProperties">
+	<mat-card *ngIf="prop">
+		<h4 class="inline">{{prop.name}}</h4>
+
+		<h4 class="inline" *ngIf="prop.identifier && ForceID">{{prop.value}}</h4>
+
+		<json-schema-property-value [value]="prop.value" (valueChange)="ValueChanged(prop.id, $event)" (dataChange)="ExtraDataChanged(prop.id, $event)" [error]="prop.error"
+									[property]="prop" [property-id]="prop.id" [sim-helpers]="SimulationHelperOptions"
+									*ngIf="!prop.identifier || !ForceID">
+		</json-schema-property-value>
+	</mat-card>
+</div>

@@ -1,0 +1,10 @@
+﻿<h2 mat-dialog-title>{{Data.title}}</h2>
+<mat-dialog-content>
+    <mat-form-field>
+        <input #inputValue matInput placeholder="{{Data.inputText}}" value="{{Data.inputValue}}">
+    </mat-form-field>
+</mat-dialog-content>
+<div mat-dialog-actions>
+    <button id="modalConfirmButton" mat-raised-button color="accent" (click)="Confirm(inputValue.value)">OK</button>
+    <button id="modalCancelButton" mat-button color="warn" mat-dialog-close="Cancel">Cancel</button>
+</div>

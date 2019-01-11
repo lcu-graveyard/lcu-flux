@@ -1,0 +1,5 @@
+﻿<button class="close" mat-button mat-dialog-close><mat-icon>close</mat-icon></button>
+
+<iframe [fxHide]="Loading" [attr.src]="ManagementPath"></iframe>
+
+<mat-spinner *ngIf="Loading" class="module-manager-loading"></mat-spinner>

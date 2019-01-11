@@ -1,0 +1,156 @@
+﻿<div *ngIf="IsSiumlationPropertyOfType(['datetime'])">
+    <mat-form-field style="width:350px;">
+        <input type="text" matInput [name]="PropertyID + 'SimValue'" placeholder="Simulation Value"
+               [ngModel]="Value" (ngModelChange)="ValueChanged($event)" [matAutocomplete]="simHelpersDateTime" />
+    </mat-form-field>
+</div>
+<div *ngIf="IsSiumlationPropertyOfType(['integer'])">
+    <mat-form-field style="width:350px;">
+        <input type="text" matInput [name]="PropertyID + 'SimValue'" placeholder="Simulation Value"
+               [ngModel]="Value" (ngModelChange)="ValueChanged($event)" [matAutocomplete]="simHelpersInteger" />
+    </mat-form-field>
+</div>
+<div *ngIf="IsSiumlationPropertyOfType(['number','double'])">
+    <mat-form-field style="width:350px;">
+        <input type="text" matInput [name]="PropertyID + 'SimValue'" placeholder="Simulation Value"
+               [ngModel]="Value" (ngModelChange)="ValueChanged($event)" [matAutocomplete]="simHelpersNumber" />
+    </mat-form-field>
+</div>
+<div *ngIf="IsSiumlationPropertyOfType(['string'])">
+    <mat-form-field style="width:350px;">
+        <input type="text" matInput [name]="PropertyID + 'SimValue'" placeholder="Simulation Value"
+               [ngModel]="Value" (ngModelChange)="ValueChanged($event)" [matAutocomplete]="simHelpersString" />
+    </mat-form-field>
+</div>
+
+<div *ngIf="IsSiumlationPropertyOfType(['boolean'])">
+	<mat-radio-group [name]="PropertyID + 'SimValue'" [(ngModel)]="Value" (change)="EmitChange()">
+		<mat-radio-button value="true">True</mat-radio-button>
+		<mat-radio-button value="false">False</mat-radio-button>
+		<mat-radio-button value="random">Random</mat-radio-button>
+	</mat-radio-group>
+</div>
+
+<div *ngIf="IsSiumlationPropertyOfType(['array'])">
+	<mat-form-field>
+		<input type="text" matInput [name]="PropertyID + 'SimValue'" placeholder="New Array Value"
+			   [(ngModel)]="NewSimulatedArrayValue" /><!--[matAutocomplete]="simHelpers"  : Had no matching data element... -->
+	</mat-form-field>
+
+	<a mat-button (click)="AddSimulatedArrayValue()">
+		<mat-icon>add</mat-icon>
+	</a>
+</div>
+
+<div *ngIf="IsSiumlationPropertyOfType(['array'])">
+	<a mat-raised-button *ngFor="let value of Value" (click)="RemoveSimulatedArrayValue(value)">
+		{{value}}
+
+		<mat-icon>close</mat-icon>
+	</a>
+</div>
+
+<!--<div *ngIf="IsSiumlationPropertyOfType(['object'])">
+	<json-schema-simulation [schema]="Property.oneOf[0]" [properties]="Value" (propertiesChange)="PropertiesChanged($event)">
+	</json-schema-simulation>
+</div>-->
+
+<mat-autocomplete #simHelpersDateTime="matAutocomplete">
+	<mat-option *ngFor="let option of SimulationHelperOptionsDateTime" [value]="option">
+		{{option}}
+	</mat-option>
+</mat-autocomplete>
+<mat-autocomplete #simHelpersInteger="matAutocomplete">
+    <mat-option *ngFor="let option of SimulationHelperOptionsInteger" [value]="option">
+        {{option}}
+    </mat-option>
+</mat-autocomplete>
+<mat-autocomplete #simHelpersNumber="matAutocomplete">
+    <mat-option *ngFor="let option of SimulationHelperOptionsNumber" [value]="option">
+        {{option}}
+    </mat-option>
+</mat-autocomplete>
+<mat-autocomplete #simHelpersString="matAutocomplete">
+    <mat-option *ngFor="let option of SimulationHelperOptionsString" [value]="option">
+        {{option}}
+    </mat-option>
+</mat-autocomplete>
+
+<div *ngIf="Value == '{moveBy(x.xx)}'">
+    <mat-form-field style="width:150px;">
+        <input type="text" matInput name="moveBy" placeholder="Move By"
+               [ngModel]="Property.extraData.moveBy" (ngModelChange)="ExtraDataChanged('moveBy',$event)" />
+    </mat-form-field>
+</div>
+<div *ngIf="Value == '{random(min, max)}' && Property.type == 'integer'">
+    <mat-form-field style="width:150px;">
+        <input type="text" matInput name="randomIntegerMin" placeholder="Min"
+               [ngModel]="Property.extraData.min" (ngModelChange)="ExtraDataChanged('minInt',$event)" />
+    </mat-form-field>
+    <mat-form-field style="width:150px;">
+        <input type="text" matInput name="randomIntegerMax" placeholder="Max"
+               [ngModel]="Property.extraData.max" (ngModelChange)="ExtraDataChanged('maxInt',$event)" />
+    </mat-form-field>
+</div>
+<div *ngIf="Value == '{random(min, max)}' && (Property.type == 'number' || Property.type == 'double')">
+    <mat-form-field style="width:150px;">
+        <input type="text" matInput name="randomNumberMin" placeholder="Min"
+               [ngModel]="Property.extraData.min" (ngModelChange)="ExtraDataChanged('minNum',$event)" />
+    </mat-form-field>
+    <mat-form-field style="width:150px;">
+        <input type="text" matInput name="randomNumberMax" placeholder="Max"
+               [ngModel]="Property.extraData.max" (ngModelChange)="ExtraDataChanged('maxNum',$event)" />
+    </mat-form-field>
+</div>
+<div *ngIf="Value == '{randomPrefix(count)}'">
+    <mat-form-field style="width:150px;">
+        <input type="text" matInput name="partialRandomStringRight" placeholder="Static String"
+               [ngModel]="Property.extraData.static" (ngModelChange)="ExtraDataChanged('static',$event)" />
+    </mat-form-field>
+    <mat-form-field style="width:150px;">
+        <input type="text" matInput name="partialRandomStringRightCount" placeholder="Number of Random Characters"
+               [ngModel]="Property.extraData.randomCount" (ngModelChange)="ExtraDataChanged('randomCount',$event)" />
+    </mat-form-field>
+</div>
+<div *ngIf="Value == '{randomPredicate(count)}'">
+    <mat-form-field style="width:150px;">
+        <input type="text" matInput name="partialRandomStringLeft" placeholder="Static String"
+               [ngModel]="Property.extraData.static" (ngModelChange)="ExtraDataChanged('static',$event)" />
+    </mat-form-field>
+    <mat-form-field style="width:150px;">
+        <input type="text" matInput name="partialRandomStringLeftCount" placeholder="Number of Random Characters"
+               [ngModel]="Property.extraData.randomCount" (ngModelChange)="ExtraDataChanged('randomCount',$event)" />
+    </mat-form-field>
+</div>
+<div *ngIf="Value == '{randomFromList}'  && Property.type == 'integer'">
+    <mat-form-field style="width:300px;">
+        <input type="text" matInput name="randomIntegerFromList" placeholder="Comma Separated Integers"
+               [ngModel]="Property.extraData.list" (ngModelChange)="ExtraDataChanged('listInt',$event)" />
+    </mat-form-field>
+    <mat-form-field style="width:300px;">
+        <input type="text" matInput name="randomIntegerFromListWeights" placeholder="Comma Separated Weight Numbers"
+               [ngModel]="Property.extraData.weights" (ngModelChange)="ExtraDataChanged('weights',$event)" />
+    </mat-form-field>
+</div>
+<div *ngIf="Value == '{randomFromList}' && (Property.type == 'number' || Property.type == 'double')">
+    <mat-form-field style="width:300px;">
+        <input type="text" matInput name="randomNumberFromList" placeholder="Comma Separated Numbers"
+               [ngModel]="Property.extraData.list" (ngModelChange)="ExtraDataChanged('listNum',$event)" />
+    </mat-form-field>
+    <mat-form-field style="width:300px;">
+        <input type="text" matInput name="randomIntegerFromListWeights" placeholder="Comma Separated Weight Numbers"
+               [ngModel]="Property.extraData.weights" (ngModelChange)="ExtraDataChanged('weights',$event)" />
+    </mat-form-field>
+</div>
+<div *ngIf="Value == '{randomFromList}' && Property.type == 'string'">
+    <mat-form-field style="width:300px;">
+        <input type="text" matInput name="randomStringFromList" placeholder="Comma Separated Strings"
+               [ngModel]="Property.extraData.list" (ngModelChange)="ExtraDataChanged('listStr',$event)" />
+    </mat-form-field>
+    <mat-form-field style="width:300px;">
+        <input type="text" matInput name="randomIntegerFromListWeights" placeholder="Comma Separated Weight Numbers"
+               [ngModel]="Property.extraData.weights" (ngModelChange)="ExtraDataChanged('weights',$event)" />
+    </mat-form-field>
+</div>
+
+<span *ngIf="Error" style="color:red;">{{Error}}</span>

@@ -1,0 +1,61 @@
+﻿<div [style.width]="Abs(obj.Width) + 'px'" [style.height]="Abs(obj.Height) +'px'" class="flowchart-object flowchart-{{obj.ModuleType}}">
+	<div>
+		<div title="Configure Node" class="node-configure node-action" (click)="OpenFlowManager(obj)">
+			<i class="fa fa-gear"></i>
+		</div>
+		<div title="Edit Node Name" class="node-edit node-action">
+			<i class="fa fa-pencil-square-o"></i>
+		</div>
+		<div title="Delete Node" class="node-delete node-action">
+			<i class="fa fa-times"></i>
+		</div>
+		<div *ngIf="obj.Status && obj.Status.Code == 0" title="Successfully provisioned" class="node-action node-status" style="color:green;">
+			<i class="fa fa-check fa-3x"></i>
+		</div>
+		<div *ngIf="obj.Settings && obj.Settings.HasErrors" title="Module has configuration errors" class="node-action node-config-status" style="color:red;">
+			<i class="fa fa-exclamation-circle fa-3x"></i>
+		</div>
+		<div *ngIf="!obj.Status || (obj.Status && obj.Status.Code != 0 && obj.Status.Code != 100 && obj.Status.Code != -100)" title="Provisioned resource not located" class="node-action node-status" style="color:red;">
+			<i class="fa fa-exclamation-triangle fa-3x"></i>
+		</div>
+		<div *ngIf="obj.Status && obj.Status.Code == -100" title="Not yet provisioned" class="node-action node-status" style="color:yellow;">
+			<i class="fa fa-exclamation-triangle fa-3x"></i>
+		</div>
+		<div *ngIf="obj.Status && obj.Status.Code == 100" title="Provisioning unavailable" class="node-action node-status" style="color:gray;">
+			<i class="fa fa-circle-o-notch fa-spin fa-3x"></i>
+		</div>
+
+		<svg [attr.width]="Abs(obj.Width)" [attr.height]="Abs(obj.Height)" [fxShow]="obj.Shape == ModuleShape.Rectangle">
+			<!---->
+			<rect [attr.x]="0" [attr.y]="0" [attr.width]="Abs(obj.Width)" [attr.height]="Abs(obj.Height)" class="outer" />
+			<rect [attr.x]="10" [attr.y]="10" [attr.width]="Abs(obj.Width-20)" [attr.height]="Abs(obj.Height-20)" class="inner" />
+
+			<text text-anchor="middle" [attr.x]="Abs(obj.Width)/2" [attr.y]="Abs(obj.Height)/2" dominant-baseline="central">{{obj.Text}}</text>
+		</svg>
+
+		<svg [attr.width]="Abs(obj.Width)" [attr.height]="Abs(obj.Height)" [fxShow]="obj.Shape == ModuleShape.Circle">
+			<circle [attr.cx]="Abs(obj.Width)/2" [attr.cy]="Abs(obj.Height)/2" class="outer" />
+			<circle [attr.cx]="Abs(obj.Width)/2" [attr.cy]="Abs(obj.Height)/2" class="inner" />
+
+			<text text-anchor="middle" [attr.x]="Abs(obj.Width)/2" [attr.y]="Abs(obj.Height)/2" dominant-baseline="central">{{obj.Text}}</text>
+		</svg>
+
+		<svg [attr.width]="Abs(obj.Width)" [attr.height]="Abs(obj.Height)" [fxShow]="obj.Shape == ModuleShape.Ellipse">
+			<ellipse [attr.cx]="Abs(obj.Width)/2" [attr.cy]="Abs(obj.Height)/2" [attr.rx]="Abs(obj.Width)/2" [attr.ry]="Abs(obj.Height)/2" class="outer" />
+			<ellipse [attr.cx]="Abs(obj.Width)/2" [attr.cy]="Abs(obj.Height)/2" [attr.rx]="Abs((obj.Width/2) - 10)" [attr.ry]="Abs((obj.Height/2) - 10)" class="inner" />
+
+			<text text-anchor="middle" [attr.x]="Abs(obj.Width)/2" [attr.y]="Abs(obj.Height)/2" dominant-baseline="central">{{obj.Text}}</text>
+		</svg>
+
+		<svg [attr.width]="Abs(obj.Width)" [attr.height]="Abs(obj.Height)" [fxShow]="obj.Shape == ModuleShape.Custom">
+			<path [attr.d]="'M ' + Abs(obj.Width)/2 + ' 0 L ' + Abs(obj.Width) + ' ' + Abs(obj.Height)/2 + ' L ' + Abs(obj.Width)/2 + ' ' + Abs(obj.Height) + ' L 0 ' + Abs(obj.Height)/2 + ' Z'" class="outer" />
+			<path [attr.d]="'M ' + Abs(obj.Width)/2 + ' 10 L ' + (Abs(obj.Width-10)) + ' ' + Abs(obj.Height)/2 + ' L ' + Abs(obj.Width)/2 + ' ' + (Abs(obj.Height-10)) + ' L 10 ' + Abs(obj.Height)/2 + ' Z'" class="inner" />
+
+			<text text-anchor="middle" [attr.x]="Abs(obj.Width)/2" [attr.y]="Abs(obj.Height)/2" dominant-baseline="central">{{obj.Text}}</text>
+		</svg>
+	</div>
+
+	<jtk-target port-type="target"></jtk-target>
+
+	<jtk-source port-type="source" filter=".outer"></jtk-source>
+</div>

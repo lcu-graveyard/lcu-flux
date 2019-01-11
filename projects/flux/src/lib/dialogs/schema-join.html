@@ -1,0 +1,65 @@
+﻿<h2 mat-dialog-title>{{Data.title}}</h2>
+<mat-dialog-content class="stretch-dialog-height">
+    <span>NOTE: Reordering join sequence or changing relationship type will remove all existing relationship key functions</span>
+    <div style="height:60%;margin-top:40px;margin-bottom:20px;">
+        <mat-list dnd-sortable-container class="list-group no-pointer" [sortableData]="JoinRelationships">
+            <mat-list-item [fxShow]="node.obj.Relationship != 'none'" *ngFor="let node of JoinRelationships;let i = index" dnd-sortable [sortableIndex]="i" (dragend)="SortSuccess()">
+                <div class="container" style="width:100%;cursor:default !important;" fxLayout fxLayout.xs="column" fxLayoutAlign="left" fxLayoutGap="10px" fxLayoutGap.xs="0">
+                    <div fxFlex="100px" class="item item-1">
+                        <h5>{{node.name}}</h5>
+                    </div>
+                    <div fxFlex="90%" class="item item-2">
+                        <mat-form-field style="width:100%">
+                            <mat-select placeholder="Relationship" [(ngModel)]="node.obj.Relationship" name="relationships" (change)="RelationshipChanged(node.nodeId)">
+                                <mat-option *ngFor="let option of RelationshipOptions" [value]="option.id">
+                                    {{option.name}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div dnd-sortable-handle fxFlex="100px" title="Sort order" class="item item-3">
+                        <button type="button" mat-button color="warn">
+                            <mat-icon>reorder</mat-icon>
+                        </button>
+                    </div>
+                    <div fxFlex="20px" class="item item-3">
+                        <div *ngIf="node.obj.Relationship &&
+                     node.obj.Relationship != 'main' && node.obj.Relationship != 'none'" style="padding:10px;padding-left:0;width:40px;cursor:pointer;">
+                            <i (click)="OpenSchemaFunctionManager(node.nodeId)" title="Click to configure relationship keys" class="fa fa-key"></i>
+                            <i *ngIf="node.obj.JoinFunctionError" title="Relationship key function errors" style="color:red;" class="fa fa-exclamation-circle"></i>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+            </mat-list-item>
+        </mat-list>
+
+        <div style="padding-top:10px" *ngIf="InactiveRelationships().length > 0">
+            <hr />
+            Not Used
+            <mat-list>
+                <mat-list-item *ngFor="let node of InactiveRelationships()">
+                    <div class="container" style="width:100%;cursor:default !important;" fxLayout fxLayout.xs="column" fxLayoutAlign="left" fxLayoutGap="10px" fxLayoutGap.xs="0">
+                        <div fxFlex="100px" class="item item-1">
+                            <h5>{{node.name}}</h5>
+                        </div>
+                        <div fxFlex="90%" class="item item-2">
+                            <mat-form-field style="width:100%">
+                            <mat-select placeholder="Relationship" [(ngModel)]="node.obj.Relationship" name="relationships" (change)="RelationshipChanged(node.nodeId)">
+                                <mat-option *ngFor="let option of RelationshipOptions" [value]="option.id">
+                                    {{option.name}}
+                                </mat-option>
+                            </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </mat-list-item>
+            </mat-list>
+        </div>
+    </div>
+</mat-dialog-content>
+<div mat-dialog-actions>
+    <button id="modalConfirmButton" mat-raised-button color="accent" (click)="Done()">Done</button>
+    <span class="fill-remaining-space"></span>
+    <button mat-button color="warn" mat-dialog-close="Cancel">Cancel</button>
+</div>

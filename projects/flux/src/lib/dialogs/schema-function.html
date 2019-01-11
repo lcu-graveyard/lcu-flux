@@ -1,0 +1,150 @@
+﻿<h2 mat-dialog-title>{{Data.title}}</h2>
+<mat-dialog-content class="stretch-dialog-height">
+    <div class="container" fxLayout fxLayout.xs="column" fxLayoutAlign="left" fxLayoutGap="10px" fxLayoutGap.xs="0">
+        <mat-form-field style="width: 100%">
+            <input type="text" matInput name="name" placeholder="Name"
+                   [(ngModel)]="Function.Name" required />
+        </mat-form-field>
+    </div>
+    <div class="container" fxLayout fxLayout.xs="column" fxLayoutAlign="left" fxLayoutGap="10px" fxLayoutGap.xs="0">
+        <mat-form-field style="width:100%;">
+            <mat-select placeholder="Function" [(ngModel)]="SelectedAvailableFunction" (selectionChange)="FunctionChanged()" name="function">
+                <mat-option *ngFor="let functionDef of AvailableSchemaFunctions" [value]="functionDef">
+                    {{functionDef.Name}}&nbsp;&nbsp;<span *ngIf="functionDef.FunctionType == 'Aggregate'">(Aggregate)&nbsp;&nbsp;</span>({{functionDef.ReturnType}})
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div *ngIf="IsPropertySelectionType()">
+        <div [fxShow]="ShowAvailableProperties" class="container" fxLayout fxLayout.xs="column" fxLayoutAlign="left" fxLayoutGap="10px" fxLayoutGap.xs="0">
+            <mat-form-field>
+                <mat-select placeholder="Available Properties" [(ngModel)]="SelectedProperty" name="properties" (selectionChange)="PropertyChanged()">
+                    <mat-option *ngFor="let functionProp of FilteredSchemaProperties" [value]="functionProp">
+                        <span *ngIf="functionProp.FullPropertyName">{{functionProp.FullPropertyName}}</span><span *ngIf="!functionProp.FullPropertyName">{{functionProp.Property.title}}</span> <span *ngIf="functionProp.Source !='static'">&nbsp;&nbsp;({{functionProp.Property.type}})</span>
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field *ngIf="ShowPropertyText">
+                <input matInput type="text" name="property-value" [placeholder]="CurrentProperty.Property.type + ' Value'" [(ngModel)]="CurrentProperty.StaticValue" required />
+            </mat-form-field>
+            <button [fxShow]="SelectedProperty != null && Function.Function != null" type="button" mat-button color="warn" (click)="AddFunctionProperty()">
+                <mat-icon>add</mat-icon>
+            </button>
+        </div>
+        <div [fxShow]="ShowSelectedProperties">
+            <h5>Selected Properties</h5>
+            <mat-list dnd-sortable-container class="list-group no-pointer" [sortableData]="Function.Properties" style="padding-bottom:20px;">
+                <mat-list-item [fxShow]="(!IsRegExType() || i > 0) && (!IsBetweenType() || i > 1)" *ngFor="let prop of Function.Properties; let i = index" dnd-sortable [sortableIndex]="i" (dragend)="SortSuccess()">
+                    <div class="container" style="width:100%;cursor:default !important;" fxLayout fxLayout.xs="column" fxLayoutAlign="left" fxLayoutGap="10px" fxLayoutGap.xs="0">
+                        <div fxFlex="100%" class="item item-1">
+                            <span *ngIf="prop.FullPropertyName">{{prop.FullPropertyName}}</span><span *ngIf="!prop.FullPropertyName">{{prop.Property.title}}</span> <span *ngIf="prop.Source !='static'">&nbsp;&nbsp;({{prop.Property.type}})</span><span *ngIf="prop.StaticValue && prop.StaticValueType == 'boolean'">&nbsp;&nbsp;({{prop.StaticValueType}})</span><span *ngIf="prop.StaticValue && prop.StaticValueType != 'boolean'">&nbsp;&nbsp;({{prop.StaticValue}})</span>
+                        </div>
+                        <div dnd-sortable-handle title="Sort order" fxFlex="100px" class="item item-2">
+                            <button type="button" mat-button color="warn">
+                                <mat-icon>reorder</mat-icon>
+                            </button>
+                        </div>
+                        <div fxFlex="100px" class="item item-3">
+                            <button type="button" mat-button color="warn" (click)="RemoveFunctionProperty(prop.Order)">
+                                <mat-icon>close</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+                </mat-list-item>
+            </mat-list>
+        </div>
+    </div>
+    <div style="padding-bottom:20px;" *ngIf="IsConditionalCompareType()">
+        <div class="container" fxLayout fxLayout.xs="column" fxLayoutAlign="left" fxLayoutGap="10px" fxLayoutGap.xs="0">
+            <div class="item item-1" [fxShow]="ShowAvailableProperties">
+                <mat-form-field>
+                    <mat-select placeholder="Left Compare Properties" required [(ngModel)]="SelectedLeftCompareProperty" (selectionChange)="LeftComparisonPropertyChanged()" name="left-comparison-properties">
+                        <mat-option *ngFor="let functionProp of AvailableSchemaProperties" [value]="functionProp">
+                            <span *ngIf="functionProp.FullPropertyName">{{functionProp.FullPropertyName}}</span><span *ngIf="!functionProp.FullPropertyName">{{functionProp.Property.title}}</span> <span *ngIf="functionProp.Source !='static'">&nbsp;&nbsp;({{functionProp.Property.type}})</span>
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <mat-form-field *ngIf="ShowLeftCompareText">
+                <input matInput type="text" name="left-comparison-value" [placeholder]="Function.Properties[0].Property.type + ' Value'" [(ngModel)]="Function.Properties[0].StaticValue" required />
+            </mat-form-field>
+            <div class="item item-2" fxFlex="100px" fxLayoutAlign="center">
+                <h2>{{Function.Function.Name}}</h2>
+            </div>
+            <div class="item item-3" fxFlex [fxShow]="ShowAvailableProperties">
+                <mat-form-field>
+                <mat-select placeholder="Right Compare Properties" required [(ngModel)]="SelectedRightCompareProperty" (selectionChange)="RightComparisonPropertyChanged()" name="right-comparison-properties">
+                    <mat-option *ngFor="let functionProp of FilteredSchemaProperties" [value]="functionProp">
+                        <span *ngIf="functionProp.FullPropertyName">{{functionProp.FullPropertyName}}</span><span *ngIf="!functionProp.FullPropertyName">{{functionProp.Property.title}}</span> <span *ngIf="functionProp.Source !='static'">&nbsp;&nbsp;({{functionProp.Property.type}})</span>
+                    </mat-option>
+                </mat-select>
+                </mat-form-field>
+            </div>
+            <mat-form-field *ngIf="ShowRightCompareText">
+                <input matInput type="text" name="right-comparison-value" [placeholder]="Function.Properties[1].Property.type + ' Value'" [(ngModel)]="Function.Properties[1].StaticValue" required />
+            </mat-form-field>
+        </div>
+    </div>
+    <div style="padding-top:20px;" *ngIf="IsRegExType()" class="container" fxLayout fxLayout.xs="column" fxLayoutAlign="left" fxLayoutGap="10px" fxLayoutGap.xs="0">
+        <div fxFlex="100%" class="item item-1">
+            <mat-form-field style="width:100%;">
+                <input matInput type="text" name="regex-value" placeholder="Regular Expression" [(ngModel)]="Function.Properties[0].StaticValue" required />
+            </mat-form-field>
+        </div>
+    </div>
+    <div style="padding-top:20px;" *ngIf="IsBetweenType()" class="container" fxLayout fxLayout.xs="column" fxLayoutAlign="left" fxLayoutGap="10px" fxLayoutGap.xs="0">
+        <div class="container" fxLayout fxLayout.xs="column" fxLayoutAlign="left" fxLayoutGap="10px" fxLayoutGap.xs="0">
+            <div class="item item-1">
+                <h2>BETWEEN</h2>
+            </div>
+            <div class="item item-2">
+                <mat-form-field style="width:100px;margin:0px 10px 0px 10px;">
+                    <input matInput type="text" name="between-lower-value" placeholder="Lower Bound" [(ngModel)]="Function.Properties[0].StaticValue" required />
+                </mat-form-field>
+            </div>
+            <div class="item item-3">
+                <h2>AND</h2>
+            </div>
+            <div class="item item-4">
+                <mat-form-field style="width:100px;margin:0px 10px 0px 10px;">
+                    <input matInput type="text" name="between-upper-value" placeholder="Upper Bound" [(ngModel)]="Function.Properties[1].StaticValue" required />
+                </mat-form-field>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="IsSelectableReturnType() && Type == 'mapping'">
+        <div class="container" fxLayout fxLayout.xs="column" fxLayoutAlign="left" fxLayoutGap="10px" fxLayoutGap.xs="0">
+            <div class="item item-1">
+                <mat-form-field  style="width:250px;">
+                <mat-select placeholder="True Return Value" required [(ngModel)]="SelectedTrueReturnProperty" (selectionChange)="TrueReturnChanged()" name="true-return-properties">
+                    <mat-option *ngFor="let functionProp of AvailableReturnSchemaProperties" [value]="functionProp">
+                        <span *ngIf="functionProp.FullPropertyName">{{functionProp.FullPropertyName}}</span><span *ngIf="!functionProp.FullPropertyName">{{functionProp.Property.title}}</span> <span *ngIf="functionProp.Source !='static'">&nbsp;&nbsp;({{functionProp.Property.type}})</span>
+                    </mat-option>
+                </mat-select>
+                </mat-form-field>
+            </div>
+            <mat-form-field *ngIf="ShowTrueReturnText">
+                <input matInput type="text" name="true-return-value" [placeholder]="SelectedTrueReturnProperty.Property.type + ' Value'" [(ngModel)]="Function.ReturnTrueValue" required />
+            </mat-form-field>
+            <div class="item item-2" fxFlex="10px" fxLayoutAlign="center">
+            </div>
+            <div class="item item-3" fxFlex>
+                <mat-form-field style="width:250px;">
+                <mat-select placeholder="False Return Value" required [(ngModel)]="SelectedFalseReturnProperty" (selectionChange)="FalseReturnChanged()" name="false-return-properties">
+                    <mat-option *ngFor="let functionProp of FilteredReturnSchemaProperties" [value]="functionProp">
+                        <span *ngIf="functionProp.FullPropertyName">{{functionProp.FullPropertyName}}</span><span *ngIf="!functionProp.FullPropertyName">{{functionProp.Property.title}}</span> <span *ngIf="functionProp.Source !='static'">&nbsp;&nbsp;({{functionProp.Property.type}})</span>
+                    </mat-option>
+                </mat-select>
+                </mat-form-field>
+            </div>
+            <mat-form-field *ngIf="ShowFalseReturnText">
+                <input matInput type="text" name="false-return-value" [placeholder]="SelectedFalseReturnProperty.Property.type + ' Value'" [(ngModel)]="Function.ReturnFalseValue" required />
+            </mat-form-field>
+        </div>
+    </div>
+</mat-dialog-content>
+<div mat-dialog-actions>
+    <button [disabled]="!CanSave()" id="modalConfirmButton" mat-raised-button color="accent" (click)="Done()">Done</button>
+    <span class="fill-remaining-space"></span>
+    <button mat-button color="warn" mat-dialog-close="Cancel">Cancel</button>
+</div>

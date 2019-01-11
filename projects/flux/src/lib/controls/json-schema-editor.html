@@ -1,0 +1,210 @@
+﻿<div class="container" style="height:100%">
+    <div [fxShow]="!Nested" style="padding-bottom:50px;">
+        <mat-radio-group (change)="SelectedExistingSchemaTypeChanged($event)" [(ngModel)]="SelectedExistingSchemaType">
+            <mat-radio-button *ngIf="ShowHangingIncommingSchemas() || ShowHangingOutgoingSchemas()" value="hanging">Unattached Schemas<i style="color:grey;width:5%;margin-left:5px;margin-right:5px;cursor:pointer;" matTooltip="Schemas in this module that are not connected to an {{SchemaType}} module." class="fa fa-info-circle"></i></mat-radio-button>
+            <mat-radio-button *ngIf="OutgoingSchemas && OutgoingSchemas.length > 0 && SchemaType == 'outgoing'" value="module">Existing Outgoing Schemas<i style="color:grey;width:5%;margin-left:5px;margin-right:5px;cursor:pointer;" matTooltip="Outgoing schemas in this module.  Outgoing schemas can be linked to multiple connected modules." class="fa fa-info-circle"></i></mat-radio-button>
+            <mat-radio-button value="flow">This Flow<i style="color:grey;width:5%;margin-left:5px;margin-right:5px;cursor:pointer;" matTooltip="Schemas used in this flow." class="fa fa-info-circle"></i></mat-radio-button>
+            <mat-radio-button value="org">This Organization<i style="color:grey;width:5%;margin-left:5px;margin-right:5px;cursor:pointer;" matTooltip="Schemas defined for this organization, regarless of flow." class="fa fa-info-circle"></i></mat-radio-button>
+        </mat-radio-group>
+        <br /><br />
+        <div style="width:200px;padding-top:20px;float:left;" *ngIf="(SelectedExistingSchemaType == 'flow' && FlowSchemas.length == 0) ||
+              (SelectedExistingSchemaType == 'org' && Schemas.length == 0)"><span style="color:red;">No Existing Schemas</span></div>
+        <mat-form-field style="float:left;width:80%;" *ngIf="(SelectedExistingSchemaType == 'flow' && FlowSchemas.length >
+            0) ||
+            (SelectedExistingSchemaType == 'org' && Schemas.length > 0)">
+            <mat-select matTooltip="Select an existing schema from the drop down, then choose to copy or use that schema (buttons to the right).  Alternatively, choose the plus (+) button to add an entirely new schema" placeholder="Existing Schemas" [(ngModel)]="SelectedExistingSchema" (selectionChange)="ExistingSchemaChanged()" name="existingSchemas">
+                <mat-optgroup *ngIf="SelectedExistingSchemaType == 'flow'" label="This Flow">
+                    <mat-option *ngFor="let schema of FlowSchemas" [value]="schema.id">
+                        {{schema.title}}
+                    </mat-option>
+                </mat-optgroup>
+                <mat-optgroup *ngIf="SelectedExistingSchemaType == 'org'" label="This Organization">
+                    <mat-option *ngFor="let schema of Schemas" [value]="schema.id">
+                        {{schema.title}}
+                    </mat-option>
+                </mat-optgroup>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field style="float:left;width:80%;" *ngIf="SelectedExistingSchemaType == 'hanging'">
+            <mat-select matTooltip="Select an existing schema from the drop down, then choose to copy or use that schema (buttons to the right).  Alternatively, choose the plus (+) button to add an entirely new schema" placeholder="Unattached Schemas" [(ngModel)]="SelectedHangingSchema" (selectionChange)="ExistingSchemaChanged()" name="existingSchemas">
+                <mat-optgroup *ngIf="SchemaType == 'incomming'" label="This Module Incomming">
+                    <mat-option *ngFor="let hang of HangingIncommingSchemas" [value]="hang">
+                        {{hang.Node.data.Name}}
+                    </mat-option>
+                </mat-optgroup>
+                <mat-optgroup *ngIf="SchemaType == 'outgoing'" label="This Module Outgoing">
+                    <mat-option *ngFor="let hang of HangingOutgoingSchemas" [value]="hang">
+                        {{hang.Node.data.Name}}
+                    </mat-option>
+                </mat-optgroup>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field style="float:left;width:80%;" *ngIf="SelectedExistingSchemaType == 'module'">
+            <mat-select matTooltip="Select an existing schema from the drop down, then choose to copy or use that schema (buttons to the right).  Alternatively, choose the plus (+) button to add an entirely new schema" placeholder="Module Outgoing Schemas" [(ngModel)]="SelectedExistingOutgoing" (selectionChange)="ExistingSchemaChanged()" name="existingSchemas">
+                <mat-optgroup *ngIf="SchemaType == 'outgoing'" label="This Module Outgoing">
+                    <mat-option *ngFor="let out of OutgoingSchemas" [value]="out">
+                        {{out.data.Name}}
+                    </mat-option>
+                </mat-optgroup>
+            </mat-select>
+        </mat-form-field>
+        
+        <div style="padding-top:20px;float:left;">
+            <div matTooltip="Add New Schema" (click)="AddNewSchema()" style="float:left;cursor:pointer;padding-left:15px;">
+                <i class="fa fa-plus" aria-hidden="true"></i>
+            </div>
+            <div matTooltip="Copy Existing Schema" (click)="ExistingSchemaCopy()" style="float:left;cursor:pointer;padding-left:15px;" *ngIf="SelectedExistingSchema">
+                <i class="fa fa-files-o" aria-hidden="true"></i>
+            </div>
+            <div matTooltip="Use Existing Schema" (click)="ExistingSchemaUse()" style="float:left;cursor:pointer;padding-left:15px;" *ngIf="SelectedExistingSchema">
+                <i class="fa fa-clone" aria-hidden="true"></i>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="ShowSchema">
+        <div [fxShow]="!Nested">
+            <br />
+            <div *ngIf="!DisableSchemaEdit">
+                <mat-form-field style="width: 45%">
+                    <input type="text" matInput [name]="PropertyKey + 'schemaTitle'" placeholder="Schema Title"
+                           [(ngModel)]="Schema.title" (ngModelChange)="CheckSchemaName($event)" required #schemaTitle />
+                </mat-form-field>
+                <div style="color:red" *ngIf="!SchemaNameValid">Schema name already exists for this organization</div>
+            </div>
+            <div *ngIf="DisableSchemaEdit && !(ShowHangingIncommingSchemas() || ShowHangingOutgoingSchemas() || (OutgoingSchemas && OutgoingSchemas.length > 0 && SchemaType == 'outgoing'))">
+                <mat-form-field style="width: 45%">
+                    <input type="text" matInput [name]="PropertyKey + 'schemaTitle'" placeholder="Source Title"
+                           [(ngModel)]="Schema.sourceTitle" required #schemaTitle />
+                </mat-form-field>
+                <div style="color:red" *ngIf="!SchemaNameValid">Schema name already exists for this organization</div>
+                <br /><br />
+                <span>Using Schema: {{Schema.title}}</span>
+            </div>
+            <br /><br />
+            <div [fxShow]="ContainsFunctions == true && !DisableSchemaEdit">
+                <strong>NOTE: Changing or deleting properties will remove the property from all existing functions</strong>
+            </div>
+        </div>
+
+        <div dnd-sortable-container class="list-group no-pointer" [sortableData]="SortedProperties">
+            <h3>
+                Properties
+            </h3>
+            <div *ngIf="!DisableSchemaEdit">
+                
+                    <div fxLayout="row">
+                        <div fxFlex="25%">
+                            <mat-form-field>
+                                <input type="text" matInput name="newSchemaPropertyTitle" placeholder="New Property Name"
+                                       [(ngModel)]="NewProperty.title" />
+                                <span *ngIf="NewPropertyTitleError" style="color:red;">{{NewPropertyTitleError}}</span>
+                            </mat-form-field>
+                        </div>
+
+                        <div fxFlex="25%">
+                            <mat-form-field>
+                                <mat-select placeholder="New Property Type" name="newSchemaPropertyType"
+                                            [(ngModel)]="NewProperty.type">
+                                    <mat-option value="boolean">Boolean</mat-option>
+                                    <mat-option value="object">Object</mat-option>
+                                    <mat-option value="array">Array</mat-option>
+                                    <mat-option value="double">Number</mat-option>
+                                    <mat-option value="string">String</mat-option>
+                                    <mat-option value="integer">Integer</mat-option>
+                                    <mat-option value="datetime">DateTime</mat-option>
+                                </mat-select>
+                                <span *ngIf="NewPropertyTypeError" style="color:red;">{{NewPropertyTypeError}}</span>
+                            </mat-form-field>
+                        </div>
+
+                        <div fxFlex="10%">
+                            <button type="button" title="Add New Property" mat-button button color="warn" (click)="AddProperty()"><mat-icon>add</mat-icon></button>
+                        </div>
+                    </div>
+  
+            </div>
+           
+
+
+            <mat-card style="cursor:default !important;" class="no-pointer" *ngFor="let prop of PivotProperties(); let i = index" dnd-sortable [sortableIndex]="i" (dragend)="SortSuccess($event)">
+                <mat-card-content>
+                    <div fxLayout="row">
+                        <div fxFlex="auto">
+                            <h3 [fxShow]="!IsEditingSettings(prop)">{{prop.title}}</h3>
+
+                            <mat-form-field [fxShow]="IsEditingSettings(prop)">
+                                <input [disabled]="DisableSchemaEdit" type="text" matInput [name]="PropertyKey + prop.title + 'PropName'" placeholder="Property Name"
+                                       [(ngModel)]="prop.title" (keyup)="EmitChange()" required />
+                            </mat-form-field>
+                        </div>
+
+                        <div *ngIf="!IsEditingSettings(prop) && !DisableSchemaEdit" dnd-sortable-handle fxFlex="100px">
+                            <button type="button" mat-button color="warn">
+                                <mat-icon>reorder</mat-icon>
+                            </button>
+                        </div>
+
+                        <div *ngIf="IsEditingSettings(prop)" fxFlex="100px">
+                            <button [disabled]="DisableSchemaEdit" (click)="RemoveProperty(prop)" type="button" mat-button color="warn">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </div>
+
+                        <div *ngIf="!IsEditingSettings(prop)" fxFlex="100px">
+                            <button type="button" (click)="SetEditingSettings(prop)" mat-button color="warn">
+                                <mat-icon>mode_edit</mat-icon>
+                            </button>
+                        </div>
+
+                        <div *ngIf="IsEditingSettings(prop)" fxFlex="100px">
+                            <button (click)="SetEditingSettings(prop)" type="button" mat-button color="warn">
+                                <mat-icon>close</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div [fxShow]="IsEditingSettings(prop)">
+                        <div>
+                            <mat-form-field>
+                                <mat-select [disabled]="DisableSchemaEdit" placeholder="Property Type" [name]="PropertyKey + prop.title + 'PropType'"
+                                            [(ngModel)]="prop.type" (selectionChange)="SchemaPropertyTypeChanged(prop)">
+                                    <mat-option value="boolean">Boolean</mat-option>
+                                    <mat-option value="object">Object</mat-option>
+                                    <mat-option value="array">Array</mat-option>
+                                    <mat-option value="double">Number</mat-option>
+                                    <mat-option value="string">String</mat-option>
+                                    <mat-option value="integer">Integer</mat-option>
+                                    <mat-option value="datetime">DateTime</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <!--<mat-checkbox [(ngModel)]="prop.IsIdentifier" (change)="EmitChange()" [name]="PropertyKey + prop.Name + 'PropId'">
+                                Is Identifier
+                            </mat-checkbox>-->
+                        </div>
+
+                        <div *ngIf="ShowValidations">
+                            <h4>Validations</h4>
+
+                            <!--<mat-checkbox [(ngModel)]="prop.Required" (change)="EmitChange()" [name]="PropertyKey + prop.Name + 'PropRequired'">
+                                Required
+                            </mat-checkbox>-->
+                        </div>
+
+                        <div *ngIf="prop.type == 'object'">
+                            <h4>Object Schema</h4>
+
+                            <json-schema-editor [flowId]="FlowID" [schema]="prop.oneOf[0]" [disable-edit]="DisableSchemaEdit" [schemas]="Schemas" (disableEditChanged)="EmitDisableEditChange()" (schemaChanged)="PropertySchemaChanged(prop, $event)" (propertyTypeChanged)="EmitPropertyTypeChanged(prop.id)" (propertyAdded)="EmitPropertyAdded()" (propertyDeleted)="EmitPropertyDeleted()"
+                                                (using-hanging-schema-changed)="EmitUsingHangingSchemaChanged()" [schema-type]="SchemaType" [contains-functions]="ContainsFunctions" [show-validations]="ShowValidations" [hanging-in-schemas]="HangingIncommingSchemas" [hanging-out-schemas]="HangingOutgoingSchemas" (using-exsiting-outgoing-changed)="EmitUsingExistingOutgoingChanged()"
+                                                [prop-key]="prop.title" [nested]="true" [parent-title]="prop.title"
+                                                [outgoing-schemas]="OutgoingSchemas">
+                            </json-schema-editor>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+
+            <p *ngIf="!Schema.properties || PivotProperties().length == 0">Add a New Property to Get Started</p>
+        </div>
+    </div>
+</div>

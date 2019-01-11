@@ -1,0 +1,44 @@
+﻿<div style="height:100%">
+    <h2 mat-dialog-title>{{Data.title}}<span *ngIf="Schema && Schema.title && !Schema.sourceTitle"> : {{Schema.title}}</span>
+                                       <span *ngIf="Schema && Schema.sourceTitle "> : {{Schema.sourceTitle}}</span></h2>
+    <mat-dialog-content  style="height:80%;max-height:80%;">
+        <div>
+            <div *ngIf="CurrentModuleConnection">
+                {{PrepareSchemaTypeText()}} Module
+                <br />
+                {{CurrentModuleConnection.name}}
+            </div>
+            <div *ngIf="!CurrentModuleConnection">
+                <mat-form-field *ngIf="SchemaType == 'incomming' && IncommingModules.length > 0" style="width:80%;">
+                    <mat-select placeholder="{{PrepareSchemaTypeText()}} Module"
+                                [(ngModel)]="SelectedIncommingModuleID">
+                        <mat-option *ngFor="let module of IncommingModules" [value]="module.id">
+                            {{ module.name }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field *ngIf="SchemaType == 'outgoing' && OutgoingModules.length > 0" style="width:80%;">
+                    <mat-select multiple placeholder="{{PrepareSchemaTypeText()}} Module(s)"
+                                [(ngModel)]="SelectedOutgoingModuleIDs">
+                        <mat-option [fxShow]="module.id != 'all'" *ngFor="let module of OutgoingModules" [value]="module.id">
+                            {{ module.name }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <span *ngIf="SchemaType == 'incomming' && IncommingModules.length == 0" style="color:red;">No Incomming Module Connections</span>
+                <span *ngIf="SchemaType == 'outgoing' && OutgoingModules.length == 0" style="color:red;">No Outgoing Module Connections</span>
+            </div>
+            <br /><br />
+            <json-schema-editor [flowId]="FlowID" [schema]="Schema" [disable-edit]="DisableSchemaEdit" [schemas]="Schemas" (disableEditChanged)="DisableSchemaEditChanged($event)" (schemaChanged)="SchemaChanged($event)" (propertyTypeChanged)="PropertyTypeChanged($event)" (propertyAdded)="PropertyAdded($event)" (propertyDeleted)="PropertyDeleted($event)" 
+                                (using-hanging-schema-changed)="UsingHangingSchemaChanged($event)" [schema-type]="SchemaType" [contains-functions]="ContainsFunctions" [show-validations]="false" [hanging-in-schemas]="HangingIncommingSchemas" [hanging-out-schemas]="HangingOutgoingSchemas" (using-exsiting-outgoing-changed)="UsingExistingOutgoingChanged($event)"
+                                [outgoing-schemas]="OutgoingSchemas">
+            </json-schema-editor>
+        </div>
+    </mat-dialog-content>
+    <div mat-dialog-actions>
+        <button [disabled]="!CanSave()" id="modalConfirmButton" mat-raised-button color="accent" (click)="Done()">Done</button>
+        <span class="fill-remaining-space"></span>
+        <button [fxShow]="Data.title != 'Edit Schema'" [disabled]="CurrentModuleConnection" mat-button color="warn" (click)="Cancel()">Cancel</button>
+    </div>
+</div>
